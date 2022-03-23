@@ -13,7 +13,6 @@ export function Animals(){
           if(test!=null){
              return setAnimals(JSON.parse(test));
           }
-
         
         axios
             .get<IAnimal[]>("https://animals.azurewebsites.net/api/animals"
@@ -41,7 +40,6 @@ export function Animals(){
         });
     },[])
 
-    //!animal.isFed = behöver matas
 
     return (
         <div className="allAnimals">
