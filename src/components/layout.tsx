@@ -4,12 +4,10 @@ export const Layout = () => {
     return(<>
     <header>
         <div className="logo-container"></div>
-        <Link to="/">Hem</Link>
+        <Link to="/">Startsida</Link>
       </header>
       <main>
         <Outlet></Outlet>
       </main>
-      <footer>
-      </footer>
     </>);
 }

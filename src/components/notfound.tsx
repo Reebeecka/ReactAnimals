@@ -1,3 +1,3 @@
 export function NotFound(){
-    return(<>not found works</>)
+    return(<>Error, link not found</>)
 }
