@@ -6,6 +6,7 @@ import { IAnimal } from "../models/Animal";
 
 export function Animals(){
     const [animals, setAnimals] = useState<IAnimal[]>([]);
+    const [fed, setFed] = useState(false);
 
     useEffect(() => {
 
@@ -28,35 +29,40 @@ export function Animals(){
     },[]);
 
     useEffect(()=>{
-        console.log(animals)
+
+        let animals:IAnimal[] = JSON.parse(localStorage.getItem("animals") || '[]');
 
         animals.map(animal =>{
 
-            let hoursSinceFed = Math.floor((new Date().getTime() - new Date(animal.lastFed).getTime()) / (1000*60*60));
+            let hoursSinceFed = Math.floor((new Date().getTime() - new Date(animal.lastFed).getTime()) / (1000));
 
             if(hoursSinceFed > 4){
                 animal.isFed=false;
             }
         });
-    },[])
+
+        localStorage.setItem("animals", JSON.stringify(animals));
+    },[animals]);
+
+    let animalsHTML =(<div className="allAnimals">
+    {animals && animals.map(animal =>
+        <div className="animalBox" key={animal.id}>
+            
+            {!animal.isFed&& <div className="needFood">Hungrig</div>}
+            <h1>{animal.name}</h1>
+            <img src={animal.imageUrl}></img>
+            <p className="year">{animal.yearOfBirth}</p>
+            <p>{animal.shortDescription}
+            <br></br>
+            <Link to={"/animals/" + animal.id}>Läs mer</Link>
+            </p>
+        </div>
+    )}
+</div>)
 
 
     return (
-        <div className="allAnimals">
-            {animals && animals.map(animal =>
-                <div className="animalBox" key={animal.id}>
-                    
-                    {!animal.isFed && <div className="needFood">Hungrig</div>}
-                    <h1>{animal.name}</h1>
-                    <img src={animal.imageUrl}></img>
-                    <p className="year">{animal.yearOfBirth}</p>
-                    <p>{animal.shortDescription}
-                    <br></br>
-                    <Link to={"/animals/" + animal.id}>Läs mer</Link>
-                    </p>
-                </div>
-            )}
-        </div>
+        <>{animalsHTML}</>
     );
 
 }
