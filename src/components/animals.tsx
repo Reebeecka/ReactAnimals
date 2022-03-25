@@ -1,20 +1,19 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { IAnimal } from "../models/Animal";
 
 
-export function Animals(){
+export function Animals() {
     const [animals, setAnimals] = useState<IAnimal[]>([]);
-    const [fed, setFed] = useState(false);
 
     useEffect(() => {
 
-         let test = localStorage.getItem("animals");
-          if(test!=null){
-             return setAnimals(JSON.parse(test));
-          }
-        
+        let animals = localStorage.getItem("animals");
+        if (animals != null) {
+            return setAnimals(JSON.parse(animals));
+        }
+
         axios
             .get<IAnimal[]>("https://animals.azurewebsites.net/api/animals"
             )
@@ -26,39 +25,41 @@ export function Animals(){
                 setAnimals(animalsFromApi);
                 localStorage.setItem("animals", JSON.stringify(animalsFromApi));
             });
-    },[]);
+    }, []);
 
-    useEffect(()=>{
+    useEffect(() => {
 
-        let animals:IAnimal[] = JSON.parse(localStorage.getItem("animals") || '[]');
+        let animals: IAnimal[] = JSON.parse(localStorage.getItem("animals") || '[]');
+        let fedtrue: boolean = false;
 
-        animals.map(animal =>{
+        animals.map(animal => {
 
-            let hoursSinceFed = Math.floor((new Date().getTime() - new Date(animal.lastFed).getTime()) / (1000));
+            let hoursSinceFed = Math.floor((new Date().getTime() - new Date(animal.lastFed).getTime()) / (1000 * 60 * 60));
 
-            if(hoursSinceFed > 4){
-                animal.isFed=false;
-            }
+            if (hoursSinceFed > 4) {
+                animal.isFed = false;
+                fedtrue = true;
+            };
         });
-
+        if (fedtrue) { setAnimals([...animals]); }
         localStorage.setItem("animals", JSON.stringify(animals));
-    },[animals]);
+    }, [animals]);
 
-    let animalsHTML =(<div className="allAnimals">
-    {animals && animals.map(animal =>
-        <div className="animalBox" key={animal.id}>
-            
-            {!animal.isFed&& <div className="needFood">Hungrig</div>}
-            <h1>{animal.name}</h1>
-            <img src={animal.imageUrl}></img>
-            <p className="year">{animal.yearOfBirth}</p>
-            <p>{animal.shortDescription}
-            <br></br>
-            <Link to={"/animals/" + animal.id}>Läs mer</Link>
-            </p>
-        </div>
-    )}
-</div>)
+    let animalsHTML = (<div className="allAnimals">
+        {animals && animals.map(animal =>
+            <div className="animalBox" key={animal.id}>
+
+                {!animal.isFed && <div className="needFood">Hungrig</div>}
+                <h1>{animal.name}</h1>
+                <img src={animal.imageUrl}></img>
+                <p className="year">{animal.yearOfBirth}</p>
+                <p>{animal.shortDescription}
+                    <br></br>
+                    <Link to={"/animals/" + animal.id}>Läs mer</Link>
+                </p>
+            </div>
+        )}
+    </div>)
 
 
     return (

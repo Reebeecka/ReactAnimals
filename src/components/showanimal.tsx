@@ -29,9 +29,9 @@ export function ShowAnimal(){
 
     useEffect(()=>{
         if(animal && animal.isFed){
-            let ms = ((new Date().getTime() - new Date(animal.lastFed).getTime())/(1000*60*60));
+            let hoursSinceFed = ((new Date().getTime() - new Date(animal.lastFed).getTime())/(1000*60*60));
 
-            if(ms > 3){
+            if(hoursSinceFed > 3){
                 setFed(false);
             }
             else{
